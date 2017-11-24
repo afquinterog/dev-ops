@@ -1,0 +1,15 @@
+[Unit]
+Description=Run %p
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker kill schickling/mailcatcher
+ExecStartPre=-/usr/bin/docker rm -f schickling/mailcatcher
+ExecStart=/usr/bin/docker run --rm --name %p \
+  -p 1080:1080 -p 1025:1025 schickling/mailcatcher
+ExecStop=/usr/bin/docker stop schickling/mailcatcher
+
+[Install]
+WantedBy=multi-user.target

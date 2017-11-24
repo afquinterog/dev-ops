@@ -1,0 +1,19 @@
+[Unit]
+Description=Run %p
+Requires=docker.service redis.service postgres.service
+After=docker.service redis.service postgres.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm -f %p
+ExecStart=/usr/bin/docker run -t --rm --name %p \
+          --link redis:redis --link postgres:postgres \
+          -e REDIS_URL=redis://redis \
+          -e ELASTICSEARCH_URL=http://elasticsearch:9200 \
+          -e MAILCATCHER_HOST=mailcatcher \
+          -p 3000:3000 %p 
+ExecStop=/usr/bin/docker stop %p
+
+[Install]
+WantedBy=multi-user.target nginx.service

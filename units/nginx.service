@@ -1,0 +1,16 @@
+[Unit]
+Description=Run %p
+Requires=docker.service 
+After=docker.service entoro-api.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm -f %p
+ExecStart=/usr/bin/docker run -t --rm --name %p \
+	--link entoro-api:entoro-api \
+  -p 80:80 -p 443:443 %p
+ExecStop=/usr/bin/docker stop %p
+
+[Install]
+WantedBy=multi-user.target

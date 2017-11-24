@@ -1,0 +1,16 @@
+[Unit]
+Description=Run %p
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStartPre=-/usr/bin/docker kill %p
+ExecStartPre=-/usr/bin/docker rm -f %p
+ExecStart=/usr/bin/docker run --rm --name %p \
+  -v /var/lib/elasticsearch/data:/usr/share/elasticsearch/data \
+  -p 9200:9200 %p:1.7.5
+ExecStop=/usr/bin/docker stop %p
+
+[Install]
+WantedBy=multi-user.target
